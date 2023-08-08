@@ -33,6 +33,24 @@ namespace WeatherSpace
         }
 
         int WindSpeedKMPH() const override {
+            return 52;
+        }
+    };
+
+    class ModifiedSensorStub : public IWeatherSensor {
+        int Humidity() const override {
+            return 72;
+        }
+
+        int Precipitation() const override {
+            return 70;
+        }
+
+        double TemperatureInC() const override {
+            return 26;
+        }
+
+        int WindSpeedKMPH() const override {
             return 49;
         }
     };
@@ -67,7 +85,7 @@ namespace WeatherSpaceTests {
     {
         // This instance of stub needs to be different-
         // to give high precipitation (>60) and low wind-speed (<50)
-        WeatherSpace::SensorStub sensor;
+        WeatherSpace::ModifiedSensorStub sensor;
 
         // strengthen the assert to expose the bug
         // (function returns Sunny day, it should predict rain)
