@@ -27,6 +27,7 @@ namespace ColorMapTests {
 void TestColorMapPairNumber()
 {
     int result = ColorMap::printColorMap();
+    assert(ColorMap::getColorPairNumber(result) != 0);
     assert(ColorMap::getColorPairNumber(result) == 25);
 }
 }
