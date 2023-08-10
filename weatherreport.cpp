@@ -22,10 +22,13 @@ namespace WeatherSpace
     class SensorStub : public IWeatherSensor {
 
     public:
-        SensorStub() : temperatureInC(0.0),
-                       humidity(0),
-                       precipitation(0),
-                       windSpeedKMPH(0) { }
+        SensorStub(double temperatureInC, int humidity, int precipitation, int windSpeedKMPH)
+        {
+            this->humidity       = humidity;
+            this->precipitation  = precipitation;
+            this->temperatureInC = temperatureInC;
+            this->windSpeedKMPH  = windSpeedKMPH;
+        }
 
         ~SensorStub() { }
 
@@ -45,7 +48,7 @@ namespace WeatherSpace
             return windSpeedKMPH;
         }
 
-    public:
+    private:
         double temperatureInC;
         int    humidity;
         int    precipitation;
@@ -72,12 +75,7 @@ namespace WeatherSpace
 namespace WeatherSpaceTests {
     void TestRainy()
     {
-        WeatherSpace::SensorStub sensor;
-        sensor.humidity       = 72;
-        sensor.precipitation  = 70;
-        sensor.temperatureInC = 26.0;
-        sensor.windSpeedKMPH  = 52;
-
+        WeatherSpace::SensorStub sensor (72, 70, 26.0, 52);
         string report = WeatherSpace::Report(sensor);
         cout << report << endl;
         assert(report.find("rain") != string::npos);
@@ -87,11 +85,7 @@ namespace WeatherSpaceTests {
     {
         // This instance of stub needs to be different-
         // to give high precipitation (>60) and low wind-speed (<50)
-        WeatherSpace::SensorStub sensor;
-        sensor.humidity       = 72;
-        sensor.precipitation  = 70;
-        sensor.temperatureInC = 26.0;
-        sensor.windSpeedKMPH  = 49;
+        WeatherSpace::SensorStub sensor (72, 70, 26.0, 49);
 
         // strengthen the assert to expose the bug
         // (function returns Sunny day, it should predict rain)
