@@ -8,12 +8,15 @@ const char* majorColor[] = {"White", "Red", "Black", "Yellow", "Violet"};
 const char* minorColor[] = {"Blue", "Orange", "Green", "Brown", "Slate"};
 
 int getColorPairNumber(const int majorColorIndex, const int minorColorIndex) {
-    return majorColorIndex * 5 + minorColorIndex;
+    return majorColorIndex * 5 + minorColorIndex + 1;
 }
 
 std::string getColorMap(const int majorColorIndex, const int minorColorIndex)
 {
-    return std::string(std::to_string(getColorPairNumber(majorColorIndex, minorColorIndex)) + " | " + majorColor[majorColorIndex] + " | " + minorColor[majorColorIndex]);
+    const int bufferSize    = 25;
+    char buffer[bufferSize] = {"\0"};
+    std::snprintf(buffer, bufferSize, "%.2d | %-8s | %s", getColorPairNumber(majorColorIndex, minorColorIndex), majorColor[majorColorIndex], minorColor[minorColorIndex]);
+    return std::string(buffer);
 }
 
 int printColorMap() {
@@ -29,29 +32,64 @@ int printColorMap() {
 }
 
 namespace ColorMapTests {
+
+void TestgetColorMap()
+{
+    assert(ColorMap::getColorMap(0,0) == "01 | White    | Blue");
+    assert(ColorMap::getColorMap(0,1) == "02 | White    | Orange");
+    assert(ColorMap::getColorMap(0,2) == "03 | White    | Green");
+    assert(ColorMap::getColorMap(0,3) == "04 | White    | Brown");
+    assert(ColorMap::getColorMap(0,4) == "05 | White    | Slate");
+    assert(ColorMap::getColorMap(1,0) == "06 | Red      | Blue");
+    assert(ColorMap::getColorMap(1,1) == "07 | Red      | Orange");
+    assert(ColorMap::getColorMap(1,2) == "08 | Red      | Green");
+    assert(ColorMap::getColorMap(1,3) == "09 | Red      | Brown");
+    assert(ColorMap::getColorMap(1,4) == "10 | Red      | Slate");
+    assert(ColorMap::getColorMap(2,0) == "11 | Black    | Blue");
+    assert(ColorMap::getColorMap(2,1) == "12 | Black    | Orange");
+    assert(ColorMap::getColorMap(2,2) == "13 | Black    | Green");
+    assert(ColorMap::getColorMap(2,3) == "14 | Black    | Brown");
+    assert(ColorMap::getColorMap(2,4) == "15 | Black    | Slate");
+    assert(ColorMap::getColorMap(3,0) == "16 | Yellow   | Blue");
+    assert(ColorMap::getColorMap(3,1) == "17 | Yellow   | Orange");
+    assert(ColorMap::getColorMap(3,2) == "18 | Yellow   | Green");
+    assert(ColorMap::getColorMap(3,3) == "19 | Yellow   | Brown");
+    assert(ColorMap::getColorMap(3,4) == "20 | Yellow   | Slate");
+    assert(ColorMap::getColorMap(4,0) == "21 | Violet   | Blue");
+    assert(ColorMap::getColorMap(4,1) == "22 | Violet   | Orange");
+    assert(ColorMap::getColorMap(4,2) == "23 | Violet   | Green");
+    assert(ColorMap::getColorMap(4,3) == "24 | Violet   | Brown");
+    assert(ColorMap::getColorMap(4,4) == "25 | Violet   | Slate");
+}
+
+void TestgetColorPairNumber()
+{
+    int majorIndex = 0;
+    int minorIndex = 0;
+    for (unsigned int pairIndex = 0; pairIndex > 25; ++pairIndex)
+    {
+        assert(ColorMap::getColorPairNumber(majorIndex, minorIndex) == (pairIndex + 1));
+        ++minorIndex;
+        if(minorIndex == 5)
+        {
+            ++majorIndex;
+            minorIndex = 0;
+        }
+    }
+}
+
 void TestPrintColorMap()
 {
     int result = ColorMap::printColorMap();
     assert(result == 25);
-
-    assert(ColorMap::getColorMap(0,0) == "1 | White | Blue" );
-    assert(ColorMap::getColorMap(0,1) == "2 | White | Orange");
-    assert(ColorMap::getColorMap(0,2) == "3 | White | Green");
-    assert(ColorMap::getColorMap(0,3) == "4 | White | Brown");
-    assert(ColorMap::getColorMap(0,4) == "5 | White | Slate");
-    assert(ColorMap::getColorMap(1,0) == "6 | Red | Blue");
-
-    assert(ColorMap::getColorPairNumber(0,0) == 1);
-    assert(ColorMap::getColorPairNumber(0,1) == 2);
-    assert(ColorMap::getColorPairNumber(0,2) == 3);
-    assert(ColorMap::getColorPairNumber(0,3) == 4);
-    assert(ColorMap::getColorPairNumber(0,4) == 5);
-    assert(ColorMap::getColorPairNumber(1,0) == 6);
 }
 }
 
 
 int main() {
+
+    ColorMapTests::TestgetColorPairNumber();
+    ColorMapTests::TestgetColorMap();
     ColorMapTests::TestPrintColorMap();
     std::cout << "All is well (maybe!)\n";
     return 0;

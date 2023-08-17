@@ -22,7 +22,7 @@ namespace WeatherSpace
     class SensorStub : public IWeatherSensor {
 
     public:
-        SensorStub(double temperatureInC, int humidity, int precipitation, int windSpeedKMPH)
+        SensorStub(int humidity, int precipitation, double temperatureInC, int windSpeedKMPH)
         {
             this->humidity       = humidity;
             this->precipitation  = precipitation;
@@ -63,11 +63,16 @@ namespace WeatherSpace
 
         if (sensor.TemperatureInC() > 25)
         {
-            if (precipitation >= 20 && precipitation < 60)
+            if (precipitation >= 20 && precipitation < 60) {
                 report = "Partly Cloudy";
-            else if (sensor.WindSpeedKMPH() > 50)
-                report = "Alert, Stormy with heavy rain";
+            }
+            else if(precipitation >= 60) {
+                report = "Rain";
+                if(sensor.WindSpeedKMPH() >= 50)
+                    report = "Alert, Stormy with heavy rain";
+            }
         }
+
         return report;
     }
 }
@@ -78,7 +83,7 @@ namespace WeatherSpaceTests {
         WeatherSpace::SensorStub sensor (72, 70, 26.0, 52);
         string report = WeatherSpace::Report(sensor);
         cout << report << endl;
-        assert(report.find("rain") != string::npos);
+        assert(report.find("Alert, Stormy with heavy rain") != string::npos);
     }
 
     void TestHighPrecipitation()
@@ -90,7 +95,7 @@ namespace WeatherSpaceTests {
         // strengthen the assert to expose the bug
         // (function returns Sunny day, it should predict rain)
         string report = WeatherSpace::Report(sensor);
-        assert(report.find("rain") != string::npos);
+        assert(report.find("Rain") != string::npos);
         assert(report.length() > 0);
     }
 }
