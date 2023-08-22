@@ -7,15 +7,24 @@ namespace ColorMap {
 const char* majorColor[] = {"White", "Red", "Black", "Yellow", "Violet"};
 const char* minorColor[] = {"Blue", "Orange", "Green", "Brown", "Slate"};
 
-int getColorPairNumber(const int majorColorIndex, const int minorColorIndex) {
+int getColorPairNumber(const unsigned int majorColorIndex, const unsigned int minorColorIndex) {
     return majorColorIndex * 5 + minorColorIndex + 1;
 }
 
-std::string getColorMap(const int majorColorIndex, const int minorColorIndex)
+std::string getColorMap(const unsigned int majorColorIndex, const unsigned int minorColorIndex)
 {
-    const int bufferSize    = 25;
-    char buffer[bufferSize] = {"\0"};
-    std::snprintf(buffer, bufferSize, "%.2d | %-8s | %s", getColorPairNumber(majorColorIndex, minorColorIndex), majorColor[majorColorIndex], minorColor[minorColorIndex]);
+    const unsigned int bufferSize = 50;
+    char buffer[bufferSize]       = {"\0"};
+
+    if((majorColorIndex < 5) && (minorColorIndex < 5))
+    {
+        std::snprintf(buffer, bufferSize, "%.2d | %-8s | %s", getColorPairNumber(majorColorIndex, minorColorIndex), majorColor[majorColorIndex], minorColor[minorColorIndex]);
+    }
+    else
+    {
+        std::snprintf(buffer, bufferSize, "(%d, %d) - Incorrect pair number", majorColorIndex, minorColorIndex);
+    }
+
     return std::string(buffer);
 }
 
@@ -60,6 +69,13 @@ void TestgetColorMap()
     assert(ColorMap::getColorMap(4,2) == "23 | Violet   | Green");
     assert(ColorMap::getColorMap(4,3) == "24 | Violet   | Brown");
     assert(ColorMap::getColorMap(4,4) == "25 | Violet   | Slate");
+    assert(ColorMap::getColorMap(4,4) == "25 | Violet   | Slate");
+    assert(ColorMap::getColorMap(5,0) == "(5, 0) - Incorrect pair number");
+    assert(ColorMap::getColorMap(5,1) == "(5, 1) - Incorrect pair number");
+    assert(ColorMap::getColorMap(5,2) == "(5, 2) - Incorrect pair number");
+    assert(ColorMap::getColorMap(5,3) == "(5, 3) - Incorrect pair number");
+    assert(ColorMap::getColorMap(5,4) == "(5, 4) - Incorrect pair number");
+    assert(ColorMap::getColorMap(5,5) == "(5, 5) - Incorrect pair number");
 }
 
 void TestgetColorPairNumber()
