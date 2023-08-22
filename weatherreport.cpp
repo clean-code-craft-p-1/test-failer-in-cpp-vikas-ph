@@ -5,7 +5,7 @@
 using namespace std;
 
 namespace WeatherSpace
-{    
+{
     class IWeatherSensor {
         public:
             virtual double TemperatureInC() const = 0;
@@ -20,22 +20,41 @@ namespace WeatherSpace
     /// without needing the actual Sensor during development
     /// </summary>
     class SensorStub : public IWeatherSensor {
+
+    public:
+        SensorStub(int humidity, int precipitation, double temperatureInC, int windSpeedKMPH)
+        {
+            this->humidity       = humidity;
+            this->precipitation  = precipitation;
+            this->temperatureInC = temperatureInC;
+            this->windSpeedKMPH  = windSpeedKMPH;
+        }
+
+        ~SensorStub() { }
+
         int Humidity() const override {
-            return 72;
+            return humidity;
         }
 
         int Precipitation() const override {
-            return 70;
+            return precipitation;
         }
 
         double TemperatureInC() const override {
-            return 26;
+            return temperatureInC;
         }
 
         int WindSpeedKMPH() const override {
-            return 52;
+            return windSpeedKMPH;
         }
+
+    private:
+        double temperatureInC;
+        int    humidity;
+        int    precipitation;
+        int    windSpeedKMPH;
     };
+
     string Report(const IWeatherSensor& sensor)
     {
         int precipitation = sensor.Precipitation();
@@ -44,38 +63,46 @@ namespace WeatherSpace
 
         if (sensor.TemperatureInC() > 25)
         {
-            if (precipitation >= 20 && precipitation < 60)
+            if (precipitation >= 20 && precipitation < 60) {
                 report = "Partly Cloudy";
-            else if (sensor.WindSpeedKMPH() > 50)
-                report = "Alert, Stormy with heavy rain";
+            }
+            else if(precipitation >= 60) {
+                report = "Rain";
+                if(sensor.WindSpeedKMPH() >= 50)
+                    report = "Alert, Stormy with heavy rain";
+            }
         }
+
         return report;
     }
-    
+}
+
+namespace WeatherSpaceTests {
     void TestRainy()
     {
-        SensorStub sensor;
-        string report = Report(sensor);
+        WeatherSpace::SensorStub sensor (72, 70, 26.0, 52);
+        string report = WeatherSpace::Report(sensor);
         cout << report << endl;
-        assert(report.find("rain") != string::npos);
+        assert(report.find("Alert, Stormy with heavy rain") != string::npos);
     }
 
     void TestHighPrecipitation()
     {
         // This instance of stub needs to be different-
         // to give high precipitation (>60) and low wind-speed (<50)
-        SensorStub sensor;
+        WeatherSpace::SensorStub sensor (72, 70, 26.0, 49);
 
         // strengthen the assert to expose the bug
         // (function returns Sunny day, it should predict rain)
-        string report = Report(sensor);
+        string report = WeatherSpace::Report(sensor);
+        assert(report.find("Rain") != string::npos);
         assert(report.length() > 0);
     }
 }
 
 int main() {
-    WeatherSpace::TestRainy();
-    WeatherSpace::TestHighPrecipitation();
+    WeatherSpaceTests::TestRainy();
+    WeatherSpaceTests::TestHighPrecipitation();
     cout << "All is well (maybe)\n";
     return 0;
 }
